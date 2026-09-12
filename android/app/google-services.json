@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "43810048125",
+    "project_id": "note-app-d364f",
+    "storage_bucket": "note-app-d364f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43810048125:android:268a7153454a603f788914",
+        "android_client_info": {
+          "package_name": "com.emediong.notes_ddd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43810048125-v1646j7rkua72g8iats0jcmvf389d2n4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emediong.notes_ddd",
+            "certificate_hash": "f7896ce9bafc82b32b547d125b873f8d34ac2d73"
+          }
+        },
+        {
+          "client_id": "43810048125-luipj0kq71ht4fbvhtfo48icpr56nidg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCzl3vpGZ6ovapx-Go23MiKPgSdoBqrMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43810048125-luipj0kq71ht4fbvhtfo48icpr56nidg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "43810048125-26a7a06m4rkn12l89dqrh8ieopk7n4sb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.emediong.notesDdd"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

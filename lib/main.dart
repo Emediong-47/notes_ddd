@@ -1,65 +1,26 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:notes_ddd/firebase_options.dart';
+import 'package:notes_ddd/injectable.dart';
+import 'package:notes_ddd/presentation/core/app_widget.dart';
+import 'package:notes_ddd/presentation/routes/app_router.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+final serverClientId = dotenv.get('SERVER_CLIENT_ID');
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+Future<void> main() async{
+  await dotenv.load();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  await GoogleSignIn.instance.initialize(
+    serverClientId: serverClientId
+  );
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+  configureDependencies();
+  runApp(AppWidget());
 }

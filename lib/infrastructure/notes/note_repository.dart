@@ -1,0 +1,128 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+import 'package:kt_dart/kt.dart';
+import 'package:notes_ddd/domain/notes/i_note_repository.dart';
+import 'package:notes_ddd/domain/notes/note.dart';
+import 'package:notes_ddd/domain/notes/note_failure.dart';
+import 'package:notes_ddd/infrastructure/core/firestore_helpers.dart';
+import 'package:notes_ddd/infrastructure/notes/note_dtos.dart';
+import 'package:rxdart/rxdart.dart';
+
+@LazySingleton(as: INoteRepository)
+class NoteRepository implements INoteRepository {
+  const NoteRepository(this._firestore);
+
+  final FirebaseFirestore _firestore;
+
+  @override
+  Future<Either<NoteFailure, Unit>> create(Note note) async {
+    try {
+      final userDoc = await _firestore.userDocument();
+      final noteDto = NoteDto.fromDomain(note);
+
+      await userDoc.noteCollection.doc(noteDto.id).set(noteDto.toJson());
+
+      return right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return left(const NoteFailure.insufficientPermission());
+      } else {
+        return left(const NoteFailure.unexpected());
+      }
+    }
+  }
+
+  @override
+  Future<Either<NoteFailure, Unit>> update(Note note) async {
+    try {
+      final userDoc = await _firestore.userDocument();
+      final noteDto = NoteDto.fromDomain(note);
+
+      await userDoc.noteCollection.doc(noteDto.id).update(noteDto.toJson());
+
+      return right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return left(const NoteFailure.insufficientPermission());
+      } else if (e.code == 'not-found') {
+        return left(const NoteFailure.documentNotFound());
+      } else {
+        return left(const NoteFailure.unexpected());
+      }
+    }
+  }
+
+  @override
+  Future<Either<NoteFailure, Unit>> delete(Note note) async {
+    try {
+      final userDoc = await _firestore.userDocument();
+      final noteId = note.id;
+
+      await userDoc.noteCollection.doc(noteId.getOrCrash()).delete();
+
+      return right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return left(const NoteFailure.insufficientPermission());
+      } else if (e.code == 'not-found') {
+        return left(const NoteFailure.documentNotFound());
+      } else {
+        return left(const NoteFailure.unexpected());
+      }
+    }
+  }
+
+  @override
+  Stream<Either<NoteFailure, KtList<Note>>> watchAll() async* {
+    final userDoc = await _firestore.userDocument();
+    yield* userDoc.noteCollection
+        .orderBy('serverTimeStamp', descending: true)
+        .snapshots()
+        .map(
+          (snapshots) => right<NoteFailure, KtList<Note>>(
+            snapshots.docs
+                .map((doc) => NoteDto.fromFireStore(doc).toDomain())
+                .toImmutableList(),
+          ),
+        )
+        .onErrorReturnWith((error, st) {
+          if (error is FirebaseException && error.code == 'permission-denied') {
+            return left(const NoteFailure.insufficientPermission());
+          } else {
+            return left(const NoteFailure.unexpected());
+          }
+        });
+  }
+
+  @override
+  Stream<Either<NoteFailure, KtList<Note>>> watchUncompleted() async* {
+    final userDoc = await _firestore.userDocument();
+    yield* userDoc.noteCollection
+        .orderBy('serverTimeStamp', descending: true)
+        .snapshots()
+        .map(
+          (snapshots) => snapshots.docs.map(
+            (doc) => NoteDto.fromFireStore(doc).toDomain(),
+          ),
+        )
+        .map(
+          (notes) => right<NoteFailure, KtList<Note>>(
+            notes
+                .where(
+                  (note) => note.todos.getOrCrash().any(
+                    (todoItem) => !todoItem.isDone,
+                  ),
+                )
+                .toImmutableList(),
+          ),
+        )
+        .onErrorReturnWith((error, st) {
+          if (error is FirebaseException && error.code == 'permission-denied') {
+            return left(const NoteFailure.insufficientPermission());
+          } else {
+            return left(const NoteFailure.unexpected());
+          }
+        });
+  }
+}
