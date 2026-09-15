@@ -9,11 +9,16 @@ class TodoDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (todo.isDone)
-          Icon(Icons.check_box,color: Theme.of(context).colorScheme.secondary,),
-        if(!todo.isDone)
-          Icon(Icons.check_box_outline_blank,color: Theme.of(context).colorScheme.onSurface,),
+          Icon(Icons.check_box, color: Theme.of(context).colorScheme.secondary),
+        if (!todo.isDone)
+          Icon(
+            Icons.check_box_outline_blank,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        Text(todo.name.getOrCrash()),
       ],
     );
   }

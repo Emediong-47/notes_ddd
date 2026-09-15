@@ -11,6 +11,52 @@
 part of 'app_router.dart';
 
 /// generated route for
+/// [NoteFormPage]
+class NoteFormRoute extends PageRouteInfo<NoteFormRouteArgs> {
+  NoteFormRoute({Key? key, Note? editedNotes, List<PageRouteInfo>? children})
+    : super(
+        NoteFormRoute.name,
+        args: NoteFormRouteArgs(key: key, editedNotes: editedNotes),
+        initialChildren: children,
+      );
+
+  static const String name = 'NoteFormRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<NoteFormRouteArgs>(
+        orElse: () => const NoteFormRouteArgs(),
+      );
+      return NoteFormPage(key: args.key, editedNotes: args.editedNotes);
+    },
+  );
+}
+
+class NoteFormRouteArgs {
+  const NoteFormRouteArgs({this.key, this.editedNotes});
+
+  final Key? key;
+
+  final Note? editedNotes;
+
+  @override
+  String toString() {
+    return 'NoteFormRouteArgs{key: $key, editedNotes: $editedNotes}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! NoteFormRouteArgs) return false;
+    return key == other.key && editedNotes == other.editedNotes;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ editedNotes.hashCode;
+}
+
+/// generated route for
 /// [NotesOverviewPage]
 class NotesOverviewRoute extends PageRouteInfo<void> {
   const NotesOverviewRoute({List<PageRouteInfo>? children})

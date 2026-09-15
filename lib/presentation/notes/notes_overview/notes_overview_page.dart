@@ -7,6 +7,7 @@ import 'package:notes_ddd/application/notes/note_watcher/note_watcher_bloc.dart'
 import 'package:notes_ddd/domain/notes/note_failure.dart';
 import 'package:notes_ddd/injectable.dart';
 import 'package:notes_ddd/presentation/notes/notes_overview/widgets/notes_overview_body_widget.dart';
+import 'package:notes_ddd/presentation/notes/notes_overview/widgets/uncompleted_switch.dart';
 import 'package:notes_ddd/presentation/routes/app_router.dart';
 
 @RoutePage()
@@ -68,16 +69,13 @@ class NotesOverviewPage extends StatelessWidget {
               ),
             ),
             actions: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.indeterminate_check_box),
-              ),
+              UncompletedSwitch()
             ],
           ),
           body: const NotesOverviewBody(),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              //TODO: navigate to NoteFormPage
+              context.router.push(NoteFormRoute());
             },
             child: const Icon(Icons.add),
           ),
